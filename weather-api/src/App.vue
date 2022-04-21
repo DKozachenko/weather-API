@@ -28,7 +28,7 @@
           <h3>Loading</h3>
         </div>
       </div>
-      <div v-else-if="isFirstSearch" class="row">
+      <div v-else-if="isFirstSearch" class="row d-flex justify-content-center">
         <div class="col-4">
           <weather-view :weather-object="weatherObjOpenWeather"></weather-view>
         </div>
@@ -51,7 +51,7 @@ export default {
     return {
       API_KEY_OPENWEATHER: '3f46e27510c3107fecb861b36d0bf1a0',
       API_KEY_YANDEX: 'b86473f6-f162-4473-84e3-086c02e35068',
-      API_KEY_GISMETEO: '56b30cb255.3443075',
+      API_KEY_GISMETEO: '61f2622de4e6d2.33217248',
       API_KEY_WEATHER: '79be307a625043d4aa9131638221004',
       cityName: 'London',
       isLoading1ApiOpenWeather: false,
@@ -95,6 +95,7 @@ export default {
       return await axios.get(`https://api.gismeteo.net/v2/weather/current/?latitude=54.35&longitude=52.52`, {
         headers: {
           'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
           'X-Gismeteo-Token': this.API_KEY_GISMETEO,
         },
 
@@ -204,7 +205,7 @@ export default {
 
       //const forecast2 = await this.getApiYandex()
       //console.log(forecast2)
-      //const forecast3 = await this.getApi3()
+      //const forecast3 = await this.getApiGismeteo()
       //console.log(forecast3)
       const forecast4 = await this.getApiWeather()
       if (!this.isError) {
