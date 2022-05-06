@@ -18,12 +18,12 @@
         </div>
       </div>
 
-      <div v-if="isError" class="row">
+      <div v-if="isOpenWeatherError || isWeatherError" class="row">
         <div class="col-12 text-center">
-          <h3>There is no this town in town database</h3>
+          <h3>There is no this town in at least one of town databases</h3>
         </div>
       </div>
-      <div v-else-if="!isError && (isLoading1ApiWeather || isLoading1ApiOpenWeather)" class="row">
+      <div v-else-if="!isOpenWeatherError && !isWeatherError && (isLoading1ApiWeather || isLoading1ApiOpenWeather)" class="row">
         <div class="col-12 text-center">
           <h3>Loading</h3>
         </div>
@@ -56,7 +56,8 @@ export default {
       cityName: 'London',
       isLoading1ApiOpenWeather: false,
       isLoading1ApiWeather: false,
-      isError: false,
+      isOpenWeatherError: false,
+      isWeatherError: false,
       isFirstSearch: false,
       weatherObjOpenWeather: {
         temp: '',
@@ -85,10 +86,11 @@ export default {
   methods: {
     async getApiOpenWeather() {
       try {
-        this.isLoading1ApiOpenWeather = true
-        return await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.cityName}&appid=${this.API_KEY_OPENWEATHER}&units=metric`)
+        let resp = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.cityName}&appid=${this.API_KEY_OPENWEATHER}&units=metric`)
+        this.isOpenWeatherError = false
+        return resp
       } catch (e) {
-        this.isError = true
+        this.isOpenWeatherError = true
       }
     },
     async getApiGismeteo() {
@@ -112,10 +114,11 @@ export default {
     },
     async getApiWeather() {
       try {
-        this.isLoading1ApiWeather = true
-        return await axios.get(`http://api.weatherapi.com/v1/current.json?key=${this.API_KEY_WEATHER}&q=${this.cityName}&aqi=no`)
+        let resp = await axios.get(`http://api.weatherapi.com/v1/current.json?key=${this.API_KEY_WEATHER}&q=${this.cityName}&aqi=no`)
+        this.isWeatherError = false
+        return resp
       } catch (e) {
-        this.isError = true
+        this.isWeatherError = true
       }
 
     },
@@ -196,9 +199,8 @@ export default {
     //по долготе и широте
     async getAllData() {
       const forecast1 = await this.getApiOpenWeather()
-      if (!this.isError) {
+      if (!this.isOpenWeatherError) {
         this.isLoading1ApiOpenWeather = false
-        this.isError = false
         this.isFirstSearch = true
         this.fillOpenWeatherObj(forecast1)
       }
@@ -208,13 +210,11 @@ export default {
       //const forecast3 = await this.getApiGismeteo()
       //console.log(forecast3)
       const forecast4 = await this.getApiWeather()
-      if (!this.isError) {
+      if (!this.isWeatherError) {
         this.isLoading1ApiWeather = false
-        this.isError = false
         this.isFirstSearch = true
         this.fillWeatherObj(forecast4)
       }
-
     }
   },
 }
